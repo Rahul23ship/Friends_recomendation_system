@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friend Recommendation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Friend Recommendation System</h1>
+        
+        <!-- Form to input the username -->
+        <form action="/recommend" method="post">
+            <label for="user">Enter Username:</label>
+            <input type="text" id="user" name="user" required>
+            <button type="submit">Get Recommendations</button>
+        </form>
+
+        <!-- Displaying error or recommendations -->
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% elif user %}
+            <h2>Recommended Friends for {{ user }}:</h2>
+            <ul>
+                {% for friend in recommendations %}
+                    <li>{{ friend }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</body>
+</html>
