@@ -30,6 +30,10 @@
     <label for="Interests" class="form-label">Interests (comma separated)</label>
     <input type="text" class="form-control" name="Interests" id="Interests" placeholder="e.g., Football, Coding, Reading" required/>
   </div>
+    <div calss="mb-3">
+      <label for="Description">Description:</label>
+  <textarea name="Description" rows="3" placeholder="Write a short bio..."></textarea>
+    </div>
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">
