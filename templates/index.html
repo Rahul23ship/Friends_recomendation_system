@@ -39,7 +39,13 @@
       <!-- Recommendations or error -->
       {% if error %}
       <div class="alert alert-danger">{{ error }}</div>
-      {% elif recommendations %}
+      {% elif recommendations %} {% if fallback %}
+      <div class="alert alert-warning">
+        ⚠️ No similar users found based on friends or interests.<br />
+        Showing most popular users instead.
+      </div>
+      {% endif %}
+
       <h2>Recommendations for {{ user }}:</h2>
 
       <!-- Scrollable container -->
@@ -86,9 +92,9 @@
       {% endif %}
 
       <!-- Back to Home -->
-      <a href="{{ url_for('home') }}" class="btn btn-secondary mt-3"
-        >🏠 Back to Home</a
-      >
+      <a href="{{ url_for('home') }}" class="btn btn-secondary mt-3">
+        🏠 Back to Home
+      </a>
     </div>
 
     <!-- Bootstrap JS (required for tooltip) -->

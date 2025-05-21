@@ -49,7 +49,7 @@ def interest_similarity(user_interests, other_interests):
 
 def combined_recommendations(G, user):
     if user not in G.nodes:
-        return []
+        return [], False
 
     user_obj = User.query.filter_by(username=user).first()
     user_friends = set(G.neighbors(user))
@@ -57,6 +57,7 @@ def combined_recommendations(G, user):
 
     scores = {}
 
+    # Case 1: User has friends — combine friend + interest similarity
     if user_friends:
         for other_user in G.nodes:
             if other_user == user or other_user in user_friends:
@@ -66,19 +67,22 @@ def combined_recommendations(G, user):
             other_friends = set(G.neighbors(other_user))
             other_interests = other_obj.interests if other_obj else ""
 
-            intersection = user_friends & other_friends
-            union = user_friends | other_friends
-            friend_score = (len(intersection) / len(union)) if union else 0
+            friend_overlap = user_friends & other_friends
+            friend_union = user_friends | other_friends
+            friend_score = len(friend_overlap) / len(friend_union) if friend_union else 0
 
             interest_score = interest_similarity(user_interests, other_interests)
             combined_score = 0.6 * friend_score + 0.4 * interest_score
 
             if combined_score > 0:
                 scores[other_user] = combined_score
+
+    # Case 2: No friends — try interest similarity alone
     else:
         for other_user in G.nodes:
             if other_user == user:
                 continue
+
             other_obj = User.query.filter_by(username=other_user).first()
             other_interests = other_obj.interests if other_obj else ""
 
@@ -86,14 +90,17 @@ def combined_recommendations(G, user):
             if interest_score > 0:
                 scores[other_user] = interest_score
 
-        if not scores:
-            popularity = {u: len(list(G.neighbors(u))) for u in G.nodes if u != user}
-            sorted_popular = sorted(popularity.items(), key=lambda x: x[1], reverse=True)
-            return [(u, 100.0) for u, _ in sorted_popular[:5]]
+    # Case 3: No interest match either — fallback to most connected users
+    if not scores:
+        popularity = {u: len(list(G.neighbors(u))) for u in G.nodes if u != user}
+        sorted_popular = sorted(popularity.items(), key=lambda x: x[1], reverse=True)
+        fallback_recommendations = [(u, 100.0) for u, _ in sorted_popular[:5]]
+        return fallback_recommendations, True  # Fallback flag True
 
-    max_score = max(scores.values()) if scores else 1
+    max_score = max(scores.values())
     sorted_users = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-    return [(username, round((score / max_score) * 100, 2)) for username, score in sorted_users]
+    normalized = [(username, round((score / max_score) * 100, 2)) for username, score in sorted_users]
+    return normalized, False  # Fallback flag False
 
 # Routes
 
@@ -112,8 +119,15 @@ def recommend():
     if not User.query.filter_by(username=user).first():
         return render_template("index.html", error="User not found", user=user, users=all_users)
 
-    recommendations = combined_recommendations(G, user)
-    return render_template("index.html", user=user, recommendations=recommendations, users=all_users)
+    recommendations, fallback = combined_recommendations(G, user)
+
+    return render_template(
+        "index.html",
+        user=user,
+        recommendations=recommendations,
+        users=all_users,
+        fallback=fallback
+    )
 
 @app.route('/add_friend_from_recommendation', methods=['POST'])
 def add_friend_from_recommendation():
