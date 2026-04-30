@@ -29,7 +29,7 @@ Where
 - **Frontend**: HTML, CSS
 - **Backend**: Python (Flask)
 - **Database**: SQLite
-- **Machine Learning**: Scikit-learn
+
 
 ## Prerequisites
 
