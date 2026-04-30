@@ -1,6 +1,6 @@
 #  Social_Media_Friends_recomendation_system
 
- A web-based application that suggests potential friends to users based on their interests and interactions. Utilizing machine learning algorithms, the system analyzes user data to provide personalized friend recommendations.
+ A web-based application that recommends potential friends to users based on shared interests and mutual connections. The system models users as nodes in a network and identifies meaningful connections using similarity-based scoring.
 
 ## Algorithm: Jaccard Similarity
 
