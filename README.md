@@ -5,7 +5,7 @@
 ## Algorithm: Jaccard Similarity
 
 The recommendation engine is powered by the Jaccard Similarity algorithm. It measures similarity between two sets (in this case, sets of user interests andd mutual relationship ) as follows:
-Jaccard Similarity (A, B)= ∣A∪B∣ / ∣A∩B∣
+Jaccard Similarity (A, B)=  ∣A∩B∣ / ∣A∪B∣
 
 Where
 - A and B are sets of interests of two users.
